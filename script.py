@@ -40,17 +40,6 @@ pygame.init()
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 screen.fill(black)
-thing = Circle(100, 5, blue)
-thing2 = Circle(1000, 5, white)
-
-thing.x[0] = 0
-thing.y[0] = 0
-thing.x[1] = 500 #pixels per second
-thing.y[1] = 500
-thing2.x[0] = WINDOW_WIDTH
-thing2.y[0] = WINDOW_HEIGHT
-thing2.x[1] = -500
-thing2.y[1] = -500
 
 circleArray = []
 circleArray.append(thing)
@@ -70,9 +59,6 @@ while (not thing.within(dimensions)) or (not thing2.within(dimensions)):
     msElapsed = clock.tick(150)
     for circle in circleArray:
         circle.advance(msElapsed)
-        
-    #thing.advance(msElapsed)
-    #thing2.advance(msElapsed)
     
 while gameRunning:    
     #check if any of the circles are going to bounce 
@@ -83,18 +69,11 @@ while gameRunning:
         (circleArray[i]).advance(msElapsed)
     (circleArray[-1]).borderBounce(dimensions)
     (circleArray[-1]).advance(msElapsed)
-    
-#    thing.collisionIsNear(thing2) #check for collisions!
-#    thing.borderBounce(dimensions)
-#    thing2.borderBounce(dimensions)
-#    thing.advance(msElapsed)
-#    thing2.advance(msElapsed)
-
+   
     #redraw the screen!
     screen.fill(black)
     for c in circleArray:
         pygame.draw.circle(screen, c.color, c.getPos(), c.radius, 3)
-    #pygame.draw.circle(screen, thing2.color, thing2.getPos(), thing2.radius, 3)
     pygame.display.update()
     
     for event in pygame.event.get():
@@ -104,9 +83,7 @@ while gameRunning:
 
     msElapsed = clock.tick(150)
     
-    #print(thing.getPos())
-    #print(str(thing.getPos()[0] + thing.radius))
-    
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

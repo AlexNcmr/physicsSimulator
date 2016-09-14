@@ -37,8 +37,11 @@ class Matter:
 
     def gety(self):
         return self.y
-    #option to set dob to current time
+    
     def reborn(self):
+        """
+        resets date of birth to current time
+        """
         self.dob = datetime.now().time()
         
     def advance(self, msElapsed):
@@ -53,7 +56,9 @@ class Matter:
         #add accelleration
 
     def within(self, dimensions):
-        #bounds checking for display dimensions
+        """
+        bounds checking for display dimensions
+        """
         if self.x[0] < 0 or self.x[0] > dimensions[0]:
             return False
         if self.y[0] < 0 or self.y[0] > dimensions[1]:
@@ -61,7 +66,10 @@ class Matter:
         return True
         
 class Circle(Matter):
-    """ inherits from matter: 
+    """ 
+    use: Circle(mass, radius, color)
+    returns: a Circle Object    
+    inherits from matter: 
         mass, 
         x, 
         y, 
@@ -72,15 +80,24 @@ class Circle(Matter):
         color
         """
     def __init__(self, mass, radius, color):
-        super().__init__(100)
+        """ 
+        Currently overwrites mass to 100, I was simulating as many colliding circles as possible, and 
+        wanted a constant mass
+        Also it is currenlty initializing circles with a random position and velocity
+        """
+        mass = 100
+        super().__init__(mass) 
         self.radius = radius
         self.color = color
+        #these lists are {position, velocity, acceleration}
+        #acceleration is not yet implemented. S
         self.x[0] = random.randrange(radius+10, 1500, radius*2+10 ) 
         self.y[0] = random.randrange(radius+10, 1000, radius*2+10 )
         self.x[1] = random.randrange(1, 400, 100)
         self.y[1] = random.randrange(1, 400, 100)
         assert self.mass >= 0
         assert radius >= 0
+
     def getPos(self):
         #returns the center of the circle
         return (self.x[0], self.y[0])
@@ -95,8 +112,7 @@ class Circle(Matter):
     
     def collision(self, other):
         #find the distance from the center of the two circles
-        
-    
+            
         x1, y1 = self.getPos()
         x2, y2 = other.getPos()
         #a*a is faster than a**2 in python. I looked for a carmack-y solution to make this faster but none exist (yet)
@@ -137,24 +153,10 @@ class Circle(Matter):
             other.x[1] = ox1
             other.y[1] = oy1
         if self.justBounced and other.justBounced:
-            print("not this time!")
-            
+            print("not this time!")            
         return
+
     def borderBounce(self, dimensions):
-        """if (self.y[0] - self.radius <= 0) or (self.y[0] + self.radius >= dimensions[0]) and (( self.x[0] - self.radius <= 0 ) or ( self.x[0] + self.radius >= dimensions[1])):
-            if (self.x[1] < 0) and (self.y[1] < 0):#upper left hand corner
-                self.x[1] = -self.x[1]
-                self.y[1] = -self.y[1]
-            elif (self.x[1] > 0)  and (self.y[1] < 0):#upper right
-                self.x[1] = -self.x[1]
-                self.y[1] = -self.y[1]
-            elif (self.x[1] < 0) and (self.y[1] > 0):#lower left
-                self.x[1] = -self.x[1]
-                self.y[1] = -self.y[1]                
-            elif (self.x[1] > 0) and (self.y[1] > 0):#lower right
-                self.x[1] = -self.x[1]
-                self.y[1] = -self.y[1]
-           """     
         if ( self.x[0] - self.radius <= 0 ) or ( self.x[0] + self.radius >= dimensions[1]) :
             if (self.x[1] < 0):#left border colission
                 self.x[1] = abs(self.x[1]) + 10
@@ -188,10 +190,15 @@ class Circle(Matter):
             return 0
         
     def blackHole(position, allCircles):
+        return 0
+        """ 
+        In Progress
         for c in allCircles:
             #if within a 300 px of the click
              k = c.getPos()
              if (abs(k[0] - position[0]) < 300) and (abs(k[1 - position[0]]) < 300):
-                 #use pythagoreans theorem to calcualte the new velocities
+                 #use pythagoreans theorem to calculate the new velocities
              
             #pull the circles to the click
+             
+             """
