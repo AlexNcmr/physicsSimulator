@@ -10,6 +10,12 @@ import sys
 import random
 random.seed()
 
+
+WINDOW_HEIGHT = 1000
+WINDOW_WIDTH = 1500
+dimensions = (WINDOW_HEIGHT, WINDOW_WIDTH)
+
+
 class Matter:
     """Everything originates from matter. In my engine I treat it as a single point (1 pixel), and it can be assigned a mass"""
     def __init__(self, mass):
@@ -65,6 +71,18 @@ class Matter:
             return False
         return True
         
+class Square(Matter):
+    """
+    use Square(mass, sLength, color):
+    returns: a Square object
+    inherits from matter:
+    mass, x, y, and dob.
+    """
+    def __init__(self, mass, slength, color):
+        mass = 100
+        super().__init__(mass)
+        self.slength = slength
+        self.color = color
 class Circle(Matter):
     """ 
     use: Circle(mass, radius, color)
@@ -94,7 +112,7 @@ class Circle(Matter):
         self.x[0] = random.randrange(radius+10, 1500, radius*2+10 ) 
         self.y[0] = random.randrange(radius+10, 1000, radius*2+10 )
         self.x[1] = random.randrange(1, 400, 100)
-        self.y[1] = random.randrange(1, 400, 100)
+        self.y[1] = random.randrange(1, 700, 100)
         assert self.mass >= 0
         assert radius >= 0
 
@@ -127,8 +145,10 @@ class Circle(Matter):
             return False
     
     def bounce(self, other):
-        #uses the conservation law of linear momentum
-        #http://www.myphysicslab.com/collideSpring.html#collisions
+        """
+        uses the conservation law of linear momentum
+        http://www.myphysicslab.com/collideSpring.html#collisions
+        """        
         massT = self.mass + other.mass
         dx = (2 * (self.mass*self.x[1] + other.mass*other.x[1] )/massT)
         dy = (2 * (self.mass*self.y[1] + other.mass*other.y[1])/massT)
@@ -139,9 +159,15 @@ class Circle(Matter):
         return
 
     def bounce2(self, other):
-        #new and improved version of bounce. it uses Elastic Collision!
-        #also keeps balls from sticking together (old bounce sometimes did this)
-        if (not self.justBounced) and (not other.justBounced):
+        """
+        new and improved version of bounce. 
+        uses Elastic Collision!
+        also, Boolean justBounced keeps balls from sticking together (old bounce sometimes did this)
+        """        
+        
+        #here 
+        
+        if (not self.justBounced) or (not other.justBounced):
             self.justBounced = True
             other.justBounced = True
             sx1 =  (self.x[1] * (self.mass - other.mass) + (2 * other.mass * other.x[1])) / (self.mass + other.mass)
@@ -152,7 +178,7 @@ class Circle(Matter):
             self.y[1] = sy1
             other.x[1] = ox1
             other.y[1] = oy1
-        if self.justBounced and other.justBounced:
+        if self.justBounced and not other.justBounced:
             print("not this time!")            
         return
 
@@ -161,6 +187,7 @@ class Circle(Matter):
             if (self.x[1] < 0):#left border colission
                 self.x[1] = abs(self.x[1]) + 10
             elif (self.x[1] > 0) and (self.x[0] + self.radius > dimensions[1]):#right border colission
+                print("right borderd colission at px: " + str(self.x[0]))                
                 self.x[1] = -abs(self.x[1])
         if (self.y[0] - self.radius <= 0) or (self.y[0] + self.radius >= dimensions[0]):
             if (self.y[1] < 0):#top border colission            
@@ -202,3 +229,39 @@ class Circle(Matter):
             #pull the circles to the click
              
              """
+             
+def startup(color):
+    """
+    This call initializes the pygame module, which is used to display the results of this physics simulator.
+    returns a screen and clock object.
+    """
+    pygame.init()
+    clock = pygame.time.Clock()
+    screen = pygame.display.set_mode((dimensions[1], dimensions[0]))
+    screen.fill(color)
+    return (clock, screen)
+    
+def updateRedraw(screen, circleArray, msElapsed):
+    screen.fill(black)
+    for c in circleArray:
+        c.advance(msElapsed)        
+        pygame.draw.circle(screen, c.color, c.getPos(), c.radius, 3)
+            
+    pygame.display.update()
+    
+def checkForCollisions(circleArray, msElapsed):
+    #check every item in circleArray against itself.  
+    for i in range(len(circleArray) - 1):
+        for j in range(i+1, (len(circleArray) )):
+            (circleArray[i]).collisionIsNear(circleArray[j])
+            #print(str(i) + " and " + str(j))
+        (circleArray[i]).borderBounce(dimensions)
+    (circleArray[-1]).borderBounce(dimensions)
+    return
+    
+def checkEvents(gameRunning):
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit(); sys.exit();
+            gameRunning = False
+            return gameRunning
